@@ -1,0 +1,25 @@
+{
+  "name": "js-viz",
+  "version": "1.0.0",
+  "description": "Entry for state of js 2018 data viz contest",
+  "main": "process.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/marcin-wosinek/js-viz.git"
+  },
+  "keywords": [
+    "js",
+    "viz"
+  ],
+  "author": "Marcin Wosinek",
+  "bugs": {
+    "url": "https://github.com/marcin-wosinek/js-viz/issues"
+  },
+  "homepage": "https://github.com/marcin-wosinek/js-viz#readme",
+  "devDependencies": {
+    "eslint": "^5.10.0"
+  }
+}
