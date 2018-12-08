@@ -59,7 +59,14 @@ function normalizeCountry (input) {
     case 'Scotland':
       success('GBR')
       break;
+    case 'South Korea':
+    case 'Korea':
+    case 'Republic of Korea':
+    case 'Korea':
+      success('KOR');
+      break;
     default:
+      console.log(input);
       summary.failure += 1;
   }
 

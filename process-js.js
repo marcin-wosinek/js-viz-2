@@ -56,9 +56,8 @@ const value = _.mapValues(combined, values => {
   return _.mean(values);
 });
 
-console.log(value);
+console.log('success', summary.success, 'vs failures', summary.failure)
 
-//console.log('success', summary.success, 'vs failures', summary.failure)
 
 fs.writeFileSync(
   'js-country-wage.json',
