@@ -1,4 +1,5 @@
 # Visualization for state of js data 2018 data
 
-Source:
-https://www.kaggle.com/sachag/state-of-javascript-2018
+Sources:
+* https://www.kaggle.com/sachag/state-of-javascript-2018
+* https://data.oecd.org/earnwage/average-wages.htm

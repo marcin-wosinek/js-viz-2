@@ -20,6 +20,9 @@
   },
   "homepage": "https://github.com/marcin-wosinek/js-viz#readme",
   "devDependencies": {
-    "eslint": "^5.10.0"
+    "country-data": "0.0.31",
+    "d3-dsv": "^1.0.10",
+    "eslint": "^5.10.0",
+    "lodash": "^4.17.11"
   }
 }
