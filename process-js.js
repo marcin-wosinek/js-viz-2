@@ -38,7 +38,7 @@ const _ = require('lodash'),
     }
     return {
       salary,
-      country: entry.country
+      country: entry.country,
     };
   }),
   combined = _.reduce(
@@ -71,12 +71,19 @@ console.log('success', summary.success, 'vs failures', summary.failure);
 const salaries = _.reduce(
   data,
   function(result, value) {
-    if (result[value.country]) {
-      if(result[value.country][value.salary]) {
-      result[value.country][value.salary] += 1;
-      } else {
+    // global
+    if (result['global'][value.salary]) {
+      result['global'][value.salary] += 1;
+    } else {
+      result['global'][value.salary] = 1;
+    }
 
-      result[value.country][value.salary] = 1;
+    // country
+    if (result[value.country]) {
+      if (result[value.country][value.salary]) {
+        result[value.country][value.salary] += 1;
+      } else {
+        result[value.country][value.salary] = 1;
       }
     } else {
       result[value.country] = {};
@@ -85,9 +92,9 @@ const salaries = _.reduce(
 
     return result;
   },
-  {},
+  {global: {}},
 );
 
-fs.writeFileSync('js-binned-wages.json', JSON.stringify(value), 'utf8');
+fs.writeFileSync('js-binned-wages.json', JSON.stringify(salaries), 'utf8');
 
 fs.writeFileSync('js-country-wage.json', JSON.stringify(value), 'utf8');

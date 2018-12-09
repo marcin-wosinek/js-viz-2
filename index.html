@@ -8,7 +8,7 @@
 
     <style></style>
     <script type="text/javascript">
-      function draw(geo_data, wages, jsWages) {
+      function draw(geo_data, wages, jsWages, jsBinned) {
         "use strict";
 
         var margin = 75,
@@ -17,7 +17,7 @@
 
         // TODO combine data to avoid going in circles
 
-        var svg = d3
+        var mapSvg = d3
           .select(".map svg")
           .attr("width", width + margin)
           .attr("height", height + margin)
@@ -31,7 +31,7 @@
 
         var path = d3.geoPath().projection(projection);
 
-        var map = svg
+        var map = mapSvg
           .selectAll("path")
           .data(geo_data.features, d => {
             return d.id;
@@ -64,7 +64,7 @@
           .domain([min, 1, max])
           .range(["red", "white", "green"]);
 
-        svg
+        mapSvg
           .selectAll("path")
           .data(filtered, d => {
             return d.country;
@@ -76,17 +76,61 @@
               colorScale(d.averageTimes)
             );
           });
+
+        var histogramSvg = d3
+          .select(".histogram svg")
+          .attr("width", width + margin)
+          .attr("height", height + margin);
+
+        function setHistagram(values) {
+          const arrayed = Object.keys(values).map(function(key) {
+            return {
+              key,
+              value: values[key]
+            };
+          });
+
+          const max = d3.max(arrayed, d => d.value),
+            yScale = d3
+              .scaleLinear()
+              .domain([0, max])
+              .range([0, height]);
+
+          histogramSvg
+            .selectAll("rect")
+            .data(arrayed, d => d.key)
+            .attr("x", (d, i) => i * 20)
+            .attr("y", d => height - yScale(d.value))
+            .attr("width", 16)
+            .attr("height", d => yScale(d.value));
+        }
+
+        histogramSvg
+          .selectAll("rect")
+          .data(
+            [
+              { key: "I work for free :(" },
+              { key: "$0-$10k" },
+              { key: "$10k-$30k" },
+              { key: "$30k-$50k" },
+              { key: "$50k-$100k" },
+              { key: "$100k-$200k" },
+              { key: "$200k+" }
+            ],
+            d => d.key
+          )
+          .enter()
+          .append("rect");
+
+        setHistagram(jsBinned.global);
       }
     </script>
   </head>
   <body>
-
     <h1>How much js dev makes compared to average wage</h1>
-    <section class="map">
-      <svg></svg>
-    </section>
+    <section class="map"><svg></svg></section>
 
-    <section class="country">
+    <section class="histogram">
       <h2>Global</h2>
       <svg id="map"></svg>
     </section>
@@ -95,8 +139,9 @@
       Promise.all([
         d3.json("world_countries.json"),
         d3.json("country-wage.json"),
-        d3.json("js-country-wage.json")
-      ]).then(responses => draw(responses[0], responses[1], responses[2]));
+        d3.json("js-country-wage.json"),
+        d3.json("js-binned-wages.json")
+      ]).then(responses => draw(...responses));
     </script>
   </body>
 </html>
