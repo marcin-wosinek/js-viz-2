@@ -6,6 +6,13 @@ const _ = require('lodash'),
   data = require('./js-salary-country.json')
     .filter(entry => entry.salary && entry.country)
     .map(entry => {
+      return {
+        country: normalizeCountry(entry.country),
+        salary: entry.salary
+      };
+    }),
+  mappedSalaries = data
+    .map(entry => {
       switch (entry.salary) {
         case 'I work for free :(':
           entry.salary = 0;
@@ -29,15 +36,9 @@ const _ = require('lodash'),
           entry.salary = 250000;
       }
       return entry;
-    })
-    .map(entry => {
-      return {
-        country: normalizeCountry(entry.country),
-        salary: entry.salary
-      };
     }),
   combined = _.reduce(
-    data,
+    mappedSalaries,
     function(result, value) {
       (result[value.country] || (result[value.country] = [])).push(value.salary);
       return result;
@@ -46,7 +47,6 @@ const _ = require('lodash'),
   );
 
 const value = _.mapValues(combined, values => {
-
   return _.mean(values);
 });
 
