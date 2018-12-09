@@ -8,7 +8,7 @@
 
     <style></style>
     <script type="text/javascript">
-      function draw(geo_data) {
+      function draw(geo_data, wages, jsWages) {
         "use strict";
         var margin = 75,
           width = 1400 - margin,
@@ -22,7 +22,8 @@
           .append("g")
           .attr("class", "map");
 
-        var projection = d3.geoMercator()
+        var projection = d3
+          .geoMercator()
           .scale(140)
           .translate([width / 2, height / 1.2]);
 
@@ -41,50 +42,48 @@
           .style("stroke", "black")
           .style("stroke-width", 0.5);
 
-        d3.json("country-wage.json").then(wages => {
-          d3.json("js-country-wage.json").then(jsWages => {
-            let difference = [];
+        let difference = [];
 
-            Object.keys(wages).forEach(function(country) {
-              difference.push({
-                country,
-                averageTimes: jsWages[country] / wages[country].wage,
-                jsWages: jsWages[country],
-                wage: wages[country].wage
-              });
-            });
-
-            const filtered = difference.filter(d => d.averageTimes),
-              min = d3.min(filtered, d => d.averageTimes),
-              max = d3.max(filtered, d => d.averageTimes);
-
-            var colorScale = d3.scaleLinear()
-              .domain([min, 1, max])
-              .range(["red", "white", "green"]);
-
-            svg
-              .selectAll("path")
-              .data(filtered, d => {
-                return d.country;
-              })
-              .enter()
-              .each(d => {
-                d3.select(`path.${d.country}`).style(
-                  "fill",
-                  colorScale(d.averageTimes)
-                );
-              });
+        Object.keys(wages).forEach(function(country) {
+          difference.push({
+            country,
+            averageTimes: jsWages[country] / wages[country].wage,
+            jsWages: jsWages[country],
+            wage: wages[country].wage
           });
         });
+
+        const filtered = difference.filter(d => d.averageTimes),
+          min = d3.min(filtered, d => d.averageTimes),
+          max = d3.max(filtered, d => d.averageTimes);
+
+        var colorScale = d3
+          .scaleLinear()
+          .domain([min, 1, max])
+          .range(["red", "white", "green"]);
+
+        svg
+          .selectAll("path")
+          .data(filtered, d => {
+            return d.country;
+          })
+          .enter()
+          .each(d => {
+            d3.select(`path.${d.country}`).style(
+              "fill",
+              colorScale(d.averageTimes)
+            );
+          });
       }
     </script>
   </head>
   <body>
     <script type="text/javascript">
-      /*
-        Use D3 to load the GeoJSON file
-      */
-      d3.json("world_countries.json").then(draw);
+      Promise.all([
+        d3.json("world_countries.json"),
+        d3.json("country-wage.json"),
+        d3.json("js-country-wage.json")
+      ]).then(responses => draw(responses[0], responses[1], responses[2]));
     </script>
   </body>
 </html>
