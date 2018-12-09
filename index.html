@@ -10,13 +10,13 @@
     <script type="text/javascript">
       function draw(geo_data, wages, jsWages) {
         "use strict";
+
         var margin = 75,
           width = 1400 - margin,
           height = 600 - margin;
 
         var svg = d3
-          .select("body")
-          .append("svg")
+          .select("#map")
           .attr("width", width + margin)
           .attr("height", height + margin)
           .append("g")
@@ -85,5 +85,9 @@
         d3.json("js-country-wage.json")
       ]).then(responses => draw(responses[0], responses[1], responses[2]));
     </script>
+
+    <h1>How much js dev makes compared to average wage</h1>
+    <svg id="map"></svg>
+
   </body>
 </html>
