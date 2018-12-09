@@ -3,13 +3,7 @@
 const _ = require('lodash'),
   fs = require('fs'),
   {normalizeCountry, summary} = require('./normalize-country'),
-  data = require('./sojs18')
-    .map(entry => {
-      return {
-        salary: entry.about_you_yearly_salary,
-        country: entry.about_you_your_country,
-      };
-    })
+  data = require('./js-salary-country.json')
     .filter(entry => entry.salary && entry.country)
     .map(entry => {
       switch (entry.salary) {
@@ -57,7 +51,6 @@ const value = _.mapValues(combined, values => {
 });
 
 console.log('success', summary.success, 'vs failures', summary.failure)
-
 
 fs.writeFileSync(
   'js-country-wage.json',
