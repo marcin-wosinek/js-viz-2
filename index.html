@@ -1,41 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-    <style>
-    </style>
+  <head>
+    <meta charset="utf-8" />
+    <script src="//cdn.jsdelivr.net/npm/d3@4.13.0/build/d3.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/d3-geo@1.11.3/dist/d3-geo.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/d3-scale@2.1.2/dist/d3-scale.min.js"></script>
+
+    <style></style>
     <script type="text/javascript">
       function draw(geo_data) {
         "use strict";
         var margin = 75,
-            width = 1400 - margin,
-            height = 600 - margin;
+          width = 1400 - margin,
+          height = 600 - margin;
 
-        var svg = d3.select("body")
-            .append("svg")
-            .attr("width", width + margin)
-            .attr("height", height + margin)
-            .append('g')
-            .attr('class', 'map');
+        var svg = d3
+          .select("body")
+          .append("svg")
+          .attr("width", width + margin)
+          .attr("height", height + margin)
+          .append("g")
+          .attr("class", "map");
 
-        var projection = d3.geo.mercator()
-                               .scale(140)
-                               .translate([width / 2, height / 1.2]);
+        var projection = d3.geoMercator()
+          .scale(140)
+          .translate([width / 2, height / 1.2]);
 
-        var path = d3.geo.path().projection(projection);
+        var path = d3.geoPath().projection(projection);
 
-        var map = svg.selectAll('path')
-                     .data(geo_data.features, d => {
-                       return d.id;
-                     })
-                     .enter()
-                     .append('path')
-                     .attr('d', path)
-                     .attr('class', d => d.id)
-                     .style('fill', 'lightBlue')
-                     .style('stroke', 'black')
-                     .style('stroke-width', 0.5);
+        var map = svg
+          .selectAll("path")
+          .data(geo_data.features, d => {
+            return d.id;
+          })
+          .enter()
+          .append("path")
+          .attr("d", path)
+          .attr("class", d => d.id)
+          .style("fill", "lightBlue")
+          .style("stroke", "black")
+          .style("stroke-width", 0.5);
 
         d3.json("country-wage.json", wages => {
           d3.json("js-country-wage.json", jsWages => {
@@ -54,29 +58,36 @@
               min = d3.min(filtered, d => d.averageTimes),
               max = d3.max(filtered, d => d.averageTimes);
 
-            var colorScale = d3.scale.linear().domain([min, 1, max]).range(['red', 'white', 'green'])
+            var colorScale = d3.scaleLinear()
+              .domain([min, 1, max])
+              .range(["red", "white", "green"]);
 
-                console.log(filtered);
+            console.log(filtered);
 
-            svg.selectAll('path').data(filtered, d => {
-              return d.country;
-              }).enter().forEach(apparentlyArray => {
-                apparentlyArray.forEach(d => {
-                    d3.select(`path.${d.__data__.country}`).style('fill', colorScale(d.__data__.averageTimes));
-                })
+            svg
+              .selectAll("path")
+              .data(filtered, d => {
+                return d.country;
+              })
+              .enter()
+              .each(d => {
+                d3.select(`path.${d.country}`).style(
+                  "fill",
+                  colorScale(d.averageTimes)
+                );
               });
           });
         });
-      };
-      </script>
+      }
+    </script>
   </head>
-<body>
-  <script type="text/javascript">
-  /*
-    Use D3 to load the GeoJSON file
-    */
+  <body>
+    <script type="text/javascript">
+      /*
+        Use D3 to load the GeoJSON file
+      */
 
-d3.json("world_countries.json", draw);
-  </script>
-</body>
+      d3.json("world_countries.json", draw);
+    </script>
+  </body>
 </html>
