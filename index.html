@@ -12,11 +12,13 @@
         "use strict";
 
         var margin = 75,
-          width = 1400 - margin,
+          width = 1140 - margin,
           height = 600 - margin;
 
+        // TODO combine data to avoid going in circles
+
         var svg = d3
-          .select("#map")
+          .select(".map svg")
           .attr("width", width + margin)
           .attr("height", height + margin)
           .append("g")
@@ -78,6 +80,17 @@
     </script>
   </head>
   <body>
+
+    <h1>How much js dev makes compared to average wage</h1>
+    <section class="map">
+      <svg></svg>
+    </section>
+
+    <section class="country">
+      <h2>Global</h2>
+      <svg id="map"></svg>
+    </section>
+
     <script type="text/javascript">
       Promise.all([
         d3.json("world_countries.json"),
@@ -85,9 +98,5 @@
         d3.json("js-country-wage.json")
       ]).then(responses => draw(responses[0], responses[1], responses[2]));
     </script>
-
-    <h1>How much js dev makes compared to average wage</h1>
-    <svg id="map"></svg>
-
   </body>
 </html>
