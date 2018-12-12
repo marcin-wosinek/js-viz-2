@@ -42,7 +42,13 @@
           .attr("class", d => d.id)
           .style("fill", "lightBlue")
           .style("stroke", "black")
-          .style("stroke-width", 0.5);
+          .style("stroke-width", 0.5)
+          .on("mouseout", d => {
+            setBarChart("global");
+          })
+          .on("mouseover", d => {
+            setBarChart(d.id);
+          });
 
         let difference = [];
 
@@ -78,7 +84,7 @@
           });
 
         var histogramSvg = d3
-          .select(".histogram svg")
+          .select(".bar-chart svg")
           .attr("width", width + margin)
           .attr("height", height + margin)
           .style("fill", "lightBlue")
@@ -98,18 +104,24 @@
         const xScale = d3
           .scaleBand()
           .domain(categories.map(({ key }) => key))
-          .range([0, width])
+          .range([50, width])
           .paddingInner(0.05);
 
         var xAxis = d3.axisBottom(xScale);
 
         histogramSvg
           .append("g")
-          .attr("class", "x axis")
+          .attr("class", "x-axis")
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis);
 
-        function setHistagram(values) {
+        var yAxisElement =
+          histogramSvg
+            .append("g")
+            .attr("class", "y-axis")
+            .attr("transform", "translate(50, 0)");
+
+        function displayBarChart(values) {
           const arrayed = Object.keys(values).map(function(key) {
             return {
               key,
@@ -121,15 +133,21 @@
             yScale = d3
               .scaleLinear()
               .domain([0, max])
-              .range([0, height - 10]);
+              .range([height, 10]),
+            yAxis = d3.axisLeft(yScale).ticks(d3.min([max, 4]));
+
+          yAxisElement.call(yAxis);
 
           histogramSvg
             .selectAll("rect")
             .data(arrayed, d => d.key)
             .attr("x", d => xScale(d.key))
-            .attr("y", d => height - yScale(d.value))
             .attr("width", xScale.bandwidth())
-            .attr("height", d => yScale(d.value));
+            .transition()
+            .delay(100)
+            .duration(500)
+            .attr("y", d => yScale(d.value))
+            .attr("height", d => height - yScale(d.value));
         }
 
         histogramSvg
@@ -138,7 +156,13 @@
           .enter()
           .append("rect");
 
-        setHistagram(jsBinned.global);
+        displayBarChart(jsBinned.global);
+
+        function setBarChart(id) {
+          d3.select(".bar-chart h2").text(id);
+
+          displayBarChart(jsBinned[id]);
+        }
       }
     </script>
   </head>
@@ -146,7 +170,7 @@
     <h1>How much js dev makes compared to average wage</h1>
     <section class="map"><svg></svg></section>
 
-    <section class="histogram">
+    <section class="bar-chart">
       <h2>Global</h2>
       <svg id="map"></svg>
     </section>

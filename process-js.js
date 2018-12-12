@@ -86,7 +86,15 @@ const salaries = _.reduce(
         result[value.country][value.salary] = 1;
       }
     } else {
-      result[value.country] = {};
+      result[value.country] = {
+        "I work for free :(": 0,
+        "$0-$10k": 0,
+        "$10k-$30k": 0,
+        "$30k-$50k": 0,
+        "$50k-$100k": 0,
+        "$100k-$200k": 0,
+        "$200k+": 0
+      };
       result[value.country][value.salary] = 1;
     }
 
