@@ -15,6 +15,12 @@
           width = 1140 - margin,
           height = 600 - margin;
 
+        const noColor = 'white',
+              // source http://colorbrewer2.org/#type=diverging&scheme=PRGn&n=5
+              goodColor = '#008837',
+              neutralColor = '#f7f7f7',
+              badColor = '#7b3294';
+
         // TODO combine data to avoid going in circles
 
         var mapSvg = d3
@@ -40,7 +46,7 @@
           .append("path")
           .attr("d", path)
           .attr("class", d => d.id)
-          .style("fill", "lightBlue")
+          .style("fill", noColor)
           .style("stroke", "black")
           .style("stroke-width", 0.5)
           .on("mouseout", d => {
@@ -68,7 +74,19 @@
         var colorScale = d3
           .scaleLinear()
           .domain([min, 1, max])
-          .range(["red", "white", "green"]);
+          .range([badColor, neutralColor, goodColor]);
+
+        const dMin = (1 - min) / 3,
+          dMax = (max - 1) / 3;
+
+        const colorLegendTicks = [1-3*dMin,1-2*dMin,1-dMin, 1, 1+dMax, 1+2*dMax, 1+3*dMax],
+          legendWidth = 20,
+          legendHeight = 120;
+
+        const colorLegendBands = d3
+          .scaleBand()
+          .domain(colorLegendTicks)
+          .range([0, legendHeight]);
 
         mapSvg
           .selectAll("path")
@@ -82,6 +100,21 @@
               colorScale(d.averageTimes)
             );
           });
+
+        var legend = d3
+          .select(".map svg")
+          .append('g')
+          .attr('class', 'legend')
+          .attr("transform", "translate(" + width + ", 0)")
+          .selectAll('.legend rect')
+          .data(colorLegendTicks)
+          .enter()
+          .append('g')
+          .append('rect')
+          .attr('width', legendWidth)
+          .attr('height', d => colorLegendBands.bandwidth())
+          .attr('y', d => colorLegendBands(d))
+          .style("fill", d => colorScale(d))
 
         var histogramSvg = d3
           .select(".bar-chart svg")
