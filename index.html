@@ -80,7 +80,34 @@
         var histogramSvg = d3
           .select(".histogram svg")
           .attr("width", width + margin)
-          .attr("height", height + margin);
+          .attr("height", height + margin)
+          .style("fill", "lightBlue")
+          .style("stroke", "black")
+          .style("stroke-width", 0.5);
+
+        const categories = [
+          { key: "I work for free :(" },
+          { key: "$0-$10k" },
+          { key: "$10k-$30k" },
+          { key: "$30k-$50k" },
+          { key: "$50k-$100k" },
+          { key: "$100k-$200k" },
+          { key: "$200k+" }
+        ];
+
+        const xScale = d3
+          .scaleBand()
+          .domain(categories.map(({ key }) => key))
+          .range([0, width])
+          .paddingInner(0.05);
+
+        var xAxis = d3.axisBottom(xScale);
+
+        histogramSvg
+          .append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
 
         function setHistagram(values) {
           const arrayed = Object.keys(values).map(function(key) {
@@ -94,31 +121,20 @@
             yScale = d3
               .scaleLinear()
               .domain([0, max])
-              .range([0, height]);
+              .range([0, height - 10]);
 
           histogramSvg
             .selectAll("rect")
             .data(arrayed, d => d.key)
-            .attr("x", (d, i) => i * 20)
+            .attr("x", d => xScale(d.key))
             .attr("y", d => height - yScale(d.value))
-            .attr("width", 16)
+            .attr("width", xScale.bandwidth())
             .attr("height", d => yScale(d.value));
         }
 
         histogramSvg
           .selectAll("rect")
-          .data(
-            [
-              { key: "I work for free :(" },
-              { key: "$0-$10k" },
-              { key: "$10k-$30k" },
-              { key: "$30k-$50k" },
-              { key: "$50k-$100k" },
-              { key: "$100k-$200k" },
-              { key: "$200k+" }
-            ],
-            d => d.key
-          )
+          .data(categories, d => d.key)
           .enter()
           .append("rect");
 
