@@ -234,16 +234,29 @@
     </script>
   </head>
   <body>
-    <h1>How much js dev makes compared to average wage</h1>
+    <h1>How much js dev makes compared to country average wage</h1>
+    <p>Hover over the country to see it's break down by category</p>
 
     <div class="content">
-    <section class="map"><svg></svg></section>
+      <section class="map"><svg></svg></section>
 
-    <section class="bar-chart">
-      <h2>Global</h2>
-      <svg id="map"></svg>
-    </section>
+      <section class="bar-chart">
+        <h2>Global</h2>
+        <svg id="map"></svg>
+      </section>
     </div>
+
+    <small>
+      Sources:
+      <ul>
+        <li>
+          <a href="https://www.kaggle.com/sachag/state-of-javascript-2018">State of JS 2018</a>
+        </li>
+        <li>
+          <a href="https://data.oecd.org/earnwage/average-wages.htm">OECS average wage</a>
+        </li>
+      </ul>
+    </small>
 
     <script type="text/javascript">
       Promise.all([
