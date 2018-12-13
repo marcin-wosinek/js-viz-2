@@ -6,20 +6,31 @@
     <script src="//cdn.jsdelivr.net/npm/d3-geo@1.11.3/dist/d3-geo.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/d3-scale@2.1.2/dist/d3-scale.min.js"></script>
 
-    <style></style>
+    <style>
+      body {
+        text-align: center;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    </style>
     <script type="text/javascript">
       function draw(geo_data, wages, jsWages, jsBinned) {
         "use strict";
 
-        var margin = 75,
-          width = 1140 - margin,
-          height = 600 - margin;
+        var margin = 70,
+          width = 900 - margin,
+          height = 450 - margin;
 
-        const noColor = 'white',
-              // source http://colorbrewer2.org/#type=diverging&scheme=PRGn&n=5
-              goodColor = '#008837',
-              neutralColor = '#f7f7f7',
-              badColor = '#7b3294';
+        const noColor = "white",
+          // source http://colorbrewer2.org/#type=diverging&scheme=PRGn&n=5
+          goodColor = "#008837",
+          neutralColor = "#f7f7f7",
+          badColor = "#7b3294";
 
         // TODO combine data to avoid going in circles
 
@@ -79,7 +90,15 @@
         const dMin = (1 - min) / 3,
           dMax = (max - 1) / 3;
 
-        const colorLegendTicks = [1-3*dMin,1-2*dMin,1-dMin, 1, 1+dMax, 1+2*dMax, 1+3*dMax],
+        const colorLegendTicks = [
+            1 - 3 * dMin,
+            1 - 2 * dMin,
+            1 - dMin,
+            1,
+            1 + dMax,
+            1 + 2 * dMax,
+            1 + 3 * dMax
+          ],
           legendWidth = 20,
           legendHeight = 120;
 
@@ -103,18 +122,34 @@
 
         var legend = d3
           .select(".map svg")
-          .append('g')
-          .attr('class', 'legend')
-          .attr("transform", "translate(" + width + ", 0)")
-          .selectAll('.legend rect')
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", `translate(${width - 30}, 190)`);
+
+        legend
+          .append("text")
+          .text("of avg")
+          .attr("y", legendHeight + 16)
+          .attr("x", legendWidth + 2);
+
+        var legendGroup = legend
+          .selectAll(".legend rect")
           .data(colorLegendTicks)
           .enter()
-          .append('g')
-          .append('rect')
-          .attr('width', legendWidth)
-          .attr('height', d => colorLegendBands.bandwidth())
-          .attr('y', d => colorLegendBands(d))
-          .style("fill", d => colorScale(d))
+          .append("g")
+          .attr("transform", d => `translate(0, ${colorLegendBands(d)})`);
+
+        legendGroup
+          .append("rect")
+          .attr("width", legendWidth)
+          .attr("height", d => colorLegendBands.bandwidth())
+          .style("fill", d => colorScale(d));
+
+        legendGroup
+          .append("text")
+          .attr("x", legendWidth + 2)
+          .attr("y", 16)
+          .text(d => `${Math.round(100 * d)}%`);
 
         var histogramSvg = d3
           .select(".bar-chart svg")
@@ -148,11 +183,10 @@
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis);
 
-        var yAxisElement =
-          histogramSvg
-            .append("g")
-            .attr("class", "y-axis")
-            .attr("transform", "translate(50, 0)");
+        var yAxisElement = histogramSvg
+          .append("g")
+          .attr("class", "y-axis")
+          .attr("transform", "translate(50, 0)");
 
         function displayBarChart(values) {
           const arrayed = Object.keys(values).map(function(key) {
@@ -201,12 +235,15 @@
   </head>
   <body>
     <h1>How much js dev makes compared to average wage</h1>
+
+    <div class="content">
     <section class="map"><svg></svg></section>
 
     <section class="bar-chart">
       <h2>Global</h2>
       <svg id="map"></svg>
     </section>
+    </div>
 
     <script type="text/javascript">
       Promise.all([
