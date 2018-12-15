@@ -19,7 +19,7 @@
       }
     </style>
     <script type="text/javascript">
-      function draw(geo_data, wages, jsWages, jsBinned) {
+      function draw(geo_data, jsWages, jsBinned) {
         "use strict";
 
         var margin = 70,
@@ -69,35 +69,35 @@
 
         let difference = [];
 
-        Object.keys(wages).forEach(function(country) {
+        console.log(jsWages);
+
+        Object.keys(jsWages).forEach(function(country) {
           difference.push({
             country,
-            averageTimes: jsWages[country] / wages[country].wage,
-            jsWages: jsWages[country],
-            wage: wages[country].wage
+            jsWages: jsWages[country]
           });
         });
 
-        const filtered = difference.filter(d => d.averageTimes),
-          min = d3.min(filtered, d => d.averageTimes),
-          max = d3.max(filtered, d => d.averageTimes);
+        const filtered = difference.filter(d => d.jsWages),
+          min = d3.min(filtered, d => d.jsWages),
+          max = d3.max(filtered, d => d.jsWages);
 
         var colorScale = d3
           .scaleLinear()
-          .domain([min, 1, max])
-          .range([badColor, neutralColor, goodColor]);
+          .domain([min, max])
+          .range([neutralColor, goodColor]);
 
-        const dMin = (1 - min) / 3,
-          dMax = (max - 1) / 3;
+        const dSalary = (max - min) / 7;
 
         const colorLegendTicks = [
-            1 - 3 * dMin,
-            1 - 2 * dMin,
-            1 - dMin,
-            1,
-            1 + dMax,
-            1 + 2 * dMax,
-            1 + 3 * dMax
+            min,
+            min + dSalary,
+            min + 2 * dSalary,
+            min + 3 * dSalary,
+            min + 4 * dSalary,
+            min + 5 * dSalary,
+            min + 6 * dSalary,
+            min + 7 * dSalary,
           ],
           legendWidth = 20,
           legendHeight = 120;
@@ -114,10 +114,7 @@
           })
           .enter()
           .each(d => {
-            d3.select(`path.${d.country}`).style(
-              "fill",
-              colorScale(d.averageTimes)
-            );
+            d3.select(`path.${d.country}`).style("fill", colorScale(d.jsWages));
           });
 
         var legend = d3
@@ -125,12 +122,6 @@
           .append("g")
           .attr("class", "legend")
           .attr("transform", `translate(${width - 30}, 190)`);
-
-        legend
-          .append("text")
-          .text("of avg")
-          .attr("y", legendHeight + 16)
-          .attr("x", legendWidth + 2);
 
         var legendGroup = legend
           .selectAll(".legend rect")
@@ -149,7 +140,7 @@
           .append("text")
           .attr("x", legendWidth + 2)
           .attr("y", 16)
-          .text(d => `${Math.round(100 * d)}%`);
+          .text(d => `${Math.round(d / 1000)}k $`);
 
         var histogramSvg = d3
           .select(".bar-chart svg")
@@ -234,7 +225,7 @@
     </script>
   </head>
   <body>
-    <h1>How much js dev makes compared to country average wage</h1>
+    <h1>Average js salary in the country</h1>
     <p>Hover over the country to see more</p>
 
     <div class="content">
@@ -250,10 +241,14 @@
       Sources:
       <ul>
         <li>
-          <a href="https://www.kaggle.com/sachag/state-of-javascript-2018">State of JS 2018</a>
+          <a href="https://www.kaggle.com/sachag/state-of-javascript-2018"
+            >State of JS 2018</a
+          >
         </li>
         <li>
-          <a href="https://data.oecd.org/earnwage/average-wages.htm">OECS average wage</a>
+          <a href="https://data.oecd.org/earnwage/average-wages.htm"
+            >OECS average wage</a
+          >
         </li>
       </ul>
     </small>
@@ -261,7 +256,6 @@
     <script type="text/javascript">
       Promise.all([
         d3.json("world_countries.json"),
-        d3.json("country-wage.json"),
         d3.json("js-country-wage.json"),
         d3.json("js-binned-wages.json")
       ]).then(responses => draw(...responses));

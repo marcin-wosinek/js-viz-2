@@ -17,6 +17,7 @@ function normalizeCountry(input) {
 
   let failure = value => {
     summary.failure += 1;
+    toReturn = false;
 
     if (summary.failures[value]) {
       summary.failures[value]++;
@@ -179,7 +180,7 @@ function normalizeCountry(input) {
       failure(input);
   }
 
-  return input;
+  return toReturn;
 }
 
 module.exports = { normalizeCountry, summary };

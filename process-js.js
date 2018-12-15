@@ -5,6 +5,7 @@ const _ = require('lodash'),
   {normalizeCountry, summary} = require('./normalize-country'),
   data = require('./js-salary-country.json')
     .filter(entry => entry.salary && entry.country)
+    .filter(entry => normalizeCountry(entry.country))
     .map(entry => {
       return {
         country: normalizeCountry(entry.country),
